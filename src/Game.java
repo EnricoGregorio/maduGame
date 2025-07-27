@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.util.Random;
 
 import javax.swing.JFrame;
 
@@ -14,15 +15,21 @@ public class Game extends Canvas implements Runnable, KeyListener {
     private Thread thread;
     private boolean isRunning;
 
+    protected World world;
+    protected Player player;
+
+    private int rand = new Random().nextInt(100);
+
     private Game() {
         this.addKeyListener(this);
         this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
         initFrame();
+        player = new Player(300, HEIGHT - HEIGHT / 2);
     }
 
     private void initFrame() {
         JFrame frame = new JFrame();
-        frame.setTitle("Jogo da Madu");
+        frame.setTitle("Madu Driver");
         frame.add(this);
         frame.setResizable(false);
         frame.pack();
@@ -47,7 +54,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
     }
 
     private void update() {
-
+        player.update();
     }
 
     private void render() {
@@ -59,8 +66,14 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         Graphics graph = bs.getDrawGraphics();
+
+        // World
         graph.setColor(new Color(43, 43, 43));
         graph.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+
+        // Player
+        player.render(graph);
+
         bs.show();
     }
 
@@ -103,8 +116,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP ^ e.getKeyCode() == KeyEvent.VK_W) {
             // TODO player up true.
+            player.up = true;
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN ^ e.getKeyCode() == KeyEvent.VK_S) {
             // TODO player down true.
+            player.down = true;
         }
     }
 
@@ -112,8 +127,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP ^ e.getKeyCode() == KeyEvent.VK_W) {
             // TODO player up false.
+            player.up = false;
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN ^ e.getKeyCode() == KeyEvent.VK_S) {
             // TODO player down false.
+            player.down = false;
         }
     }
 
