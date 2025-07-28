@@ -5,20 +5,23 @@ import java.awt.Rectangle;
 public class Player extends Rectangle {
     protected boolean up, down;
     private int speed = 3;
+    private int side = 32;
 
     protected Player(int x, int y) {
         super(x, y, 32, 32);
     }
 
     protected void update() {
-        boolean moved = false;
+        // boolean moved = false;
 
-        if (up) {
+        if (up && y >= 0 && Game.isFree()) {
             y -= speed;
-            moved = true;
-        } else if (down) {
+            // moved = true;
+        }
+
+        if (down && y <= Game.HEIGHT - side && Game.isFree()) {
             y += speed;
-            moved = true;
+            // moved = true;
         }
     }
 

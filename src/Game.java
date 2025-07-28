@@ -1,30 +1,30 @@
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.JFrame;
 
 public class Game extends Canvas implements Runnable, KeyListener {
-
-    private final int WIDTH = 1366, HEIGHT = 768, SCALE = 1;
+    protected static final int WIDTH = 1366, HEIGHT = 768, SCALE = 1;
     private Thread thread;
     private boolean isRunning;
 
-    protected World world;
-    protected Player player;
-
-    private int rand = new Random().nextInt(100);
+    protected static Player player = new Player(300, HEIGHT - HEIGHT / 2);
+    protected static List<Obstacle> obstacles = new ArrayList<Obstacle>();
+    private Random rand = new Random();
 
     private Game() {
         this.addKeyListener(this);
         this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
         initFrame();
-        player = new Player(300, HEIGHT - HEIGHT / 2);
     }
 
     private void initFrame() {
@@ -53,8 +53,29 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
     }
 
+    protected static boolean isFree() {
+        for (int i = 0; i < obstacles.size(); i++) {
+            Obstacle actualObs = obstacles.get(i);
+            if (actualObs.intersects(player)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void update() {
         player.update();
+
+        if (rand.nextInt(1, 300) == 1) {
+            obstacles.add(new Obstacle(WIDTH, rand.nextInt(0, HEIGHT - 32)));
+        }
+
+        for (int i = 0; i < obstacles.size(); i++) {
+            if (obstacles.get(i).x + 32 < 0) {
+                obstacles.remove(i);
+            }
+        }
+
     }
 
     private void render() {
@@ -73,6 +94,23 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
         // Player
         player.render(graph);
+
+        // Obstacle
+        for (int i = 0; i < obstacles.size(); i++) {
+            obstacles.get(i).render(graph);
+        }
+
+        // Message
+        if (!isFree()) {
+            graph.setColor(new Color(40, 40, 40, 1));
+            graph.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+
+            graph.setColor(new Color(255, 255, 255));
+            graph.setFont(new Font("Arial", Font.BOLD, 20));
+            graph.drawString("Game Over.", WIDTH * SCALE / 2, HEIGHT * SCALE / 2);
+            bs.show();
+            isRunning = false;
+        }
 
         bs.show();
     }
@@ -115,22 +153,23 @@ public class Game extends Canvas implements Runnable, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP ^ e.getKeyCode() == KeyEvent.VK_W) {
-            // TODO player up true.
             player.up = true;
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN ^ e.getKeyCode() == KeyEvent.VK_S) {
-            // TODO player down true.
             player.down = true;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            System.exit(0);
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP ^ e.getKeyCode() == KeyEvent.VK_W) {
-            // TODO player up false.
             player.up = false;
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN ^ e.getKeyCode() == KeyEvent.VK_S) {
-            // TODO player down false.
             player.down = false;
+
         }
     }
 
