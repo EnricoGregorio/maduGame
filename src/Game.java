@@ -17,14 +17,19 @@ public class Game extends Canvas implements Runnable, KeyListener {
     private Thread thread;
     private boolean isRunning;
 
-    protected static Player player = new Player(300, HEIGHT - HEIGHT / 2);
+    protected static Player player;
     protected static List<Obstacle> obstacles = new ArrayList<Obstacle>();
+
+    private long lastRectTime = System.currentTimeMillis(); // tempo do último retângulo
+    protected static List<World> stripes = new ArrayList<World>();
     private Random rand = new Random();
 
     private Game() {
         this.addKeyListener(this);
         this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
+        new Spritesheet();
         initFrame();
+        player = new Player(300, HEIGHT - HEIGHT / 2);
     }
 
     private void initFrame() {
@@ -63,19 +68,51 @@ public class Game extends Canvas implements Runnable, KeyListener {
         return true;
     }
 
+    // Verifica se o novo obstáculo colide com algum já existente
+    private boolean collidesWithOthers(Obstacle newObstacle) {
+        for (Obstacle obs : obstacles) {
+            if (obs.intersects(newObstacle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void update() {
         player.update();
 
         if (rand.nextInt(1, 300) == 1) {
-            obstacles.add(new Obstacle(WIDTH, rand.nextInt(0, HEIGHT - 32)));
-        }
-
-        for (int i = 0; i < obstacles.size(); i++) {
-            if (obstacles.get(i).x + 32 < 0) {
-                obstacles.remove(i);
+            int maxTries = 10;
+            for (int i = 0; i < maxTries; i++) {
+                Obstacle newObstacle = new Obstacle(WIDTH, rand.nextInt(0, HEIGHT - 32));
+                if (!collidesWithOthers(newObstacle)) {
+                    obstacles.add(newObstacle);
+                    break; // sucesso
+                }
             }
         }
 
+        for (int i = 0; i < obstacles.size(); i++) {
+            if (obstacles.get(i).x + 130 < 0) {
+                obstacles.remove(i);
+                i--; // evitar pular elementos
+            }
+        }
+
+        long currentTime = System.currentTimeMillis();
+
+        // Verifica se 1 segundo passou desde o último retângulo
+        if (currentTime - lastRectTime >= 1000) {
+            stripes.add(new World(WIDTH, HEIGHT / 2 - 20));
+            lastRectTime = currentTime;
+        }
+
+         for (int i = 0; i < stripes.size(); i++) {
+            if (stripes.get(i).x + 90 < 0) {
+                stripes.remove(i);
+                i--; // evitar pular elementos
+            }
+        }
     }
 
     private void render() {
@@ -91,6 +128,9 @@ public class Game extends Canvas implements Runnable, KeyListener {
         // World
         graph.setColor(new Color(43, 43, 43));
         graph.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+        for (int i = 0; i < stripes.size(); i++) {
+            stripes.get(i).render(graph);
+        }
 
         // Player
         player.render(graph);
@@ -106,8 +146,8 @@ public class Game extends Canvas implements Runnable, KeyListener {
             graph.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
 
             graph.setColor(new Color(255, 255, 255));
-            graph.setFont(new Font("Arial", Font.BOLD, 20));
-            graph.drawString("Game Over.", WIDTH * SCALE / 2, HEIGHT * SCALE / 2);
+            graph.setFont(new Font("Arial", Font.BOLD, 80));
+            graph.drawString("Game Over.", WIDTH * SCALE / 2 - 210, HEIGHT * SCALE / 2 - 180);
             bs.show();
             isRunning = false;
         }
@@ -141,6 +181,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
                 System.out.println("FPS: " + frames);
                 frames = 0;
                 timer += 1000;
+                Obstacle.speed += 0.02;
             }
         }
         stopGame();

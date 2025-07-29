@@ -1,32 +1,51 @@
-import java.awt.Color;
+
+// import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public class Player extends Rectangle {
     protected boolean up, down;
     private int speed = 3;
-    private int side = 32;
+    private int height = 80, width = 60;
+
+    private boolean isMove = true;
+    private int curFrames = 0, targetFrames = 15;
+    private int curAnimation = 0;
 
     protected Player(int x, int y) {
-        super(x, y, 32, 32);
+        super(x, y,60, 80);
+    }
+
+    private void anime() {
+        if (isMove) {
+            curFrames++;
+            if (curFrames == targetFrames) {
+                curFrames = 0;
+                curAnimation++;
+                if (curAnimation == Spritesheet.player.length) {
+                    curAnimation = 0;
+                }
+            }
+        } else {
+            curAnimation = 0;
+        }
     }
 
     protected void update() {
-        // boolean moved = false;
+        anime();
 
         if (up && y >= 0 && Game.isFree()) {
             y -= speed;
-            // moved = true;
         }
 
-        if (down && y <= Game.HEIGHT - side && Game.isFree()) {
+        if (down && y <= Game.HEIGHT - height && Game.isFree()) {
             y += speed;
-            // moved = true;
         }
     }
 
     protected void render(Graphics g) {
-        g.setColor(Color.BLUE);
-        g.fillRect(x, y, 32, 32);
+        // g.setColor(Color.BLUE);
+        // g.fillRect(x, y, 32, 32);
+        g.drawImage(Spritesheet.player[curAnimation], x, y, width, height, null);
     }
 }
