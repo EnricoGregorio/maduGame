@@ -153,7 +153,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
             graph.setColor(new Color(255, 255, 255));
             graph.setFont(new Font("Arial", Font.BOLD, 80));
-            graph.drawString("Game Over.", WIDTH * SCALE / 2 - 210, HEIGHT * SCALE / 2 - 180);
+            graph.drawString("Game Over", WIDTH * SCALE / 2 - 210, HEIGHT * SCALE / 2 - 180);
             bs.show();
             isRunning = false;
         }
