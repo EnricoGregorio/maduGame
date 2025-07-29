@@ -12,7 +12,7 @@ public class Obstacle extends Rectangle {
     Random rand = new Random();
 
     protected Obstacle(int x, int y) {
-        super(x, y, 240, 120);
+        super(x, y, 210, 120);
     }
 
     private void anime() {
@@ -32,6 +32,6 @@ public class Obstacle extends Rectangle {
 
     protected void render(Graphics g) {
         anime();
-        g.drawImage(Spritesheet.obstacle[curAnimation], x-=2 * speed, y, width, height, null);
+        g.drawImage(Spritesheet.obstacle[curAnimation], x -= 2 * speed, y, width, height, null);
     }
 }

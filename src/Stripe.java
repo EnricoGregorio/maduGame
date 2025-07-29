@@ -11,6 +11,6 @@ public class Stripe extends Rectangle {
 
     protected void render(Graphics g) {
         g.setColor(new Color(233, 233, 233));
-        g.fillRect(x-=2 * Obstacle.speed, y, width, height);
+        g.fillRect(x -= 2 * Obstacle.speed, y, width, height);
     }
 }

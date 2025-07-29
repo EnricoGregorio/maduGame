@@ -17,7 +17,7 @@ public class Spritesheet {
         }
 
         player = new BufferedImage[3];
-        obstacle = new BufferedImage[3];
+        obstacle = new BufferedImage[2];
 
         player[0] = Spritesheet.getSprite(18, 36, 151, 216);
         player[1] = Spritesheet.getSprite(177, 36, 147, 216);
@@ -28,7 +28,7 @@ public class Spritesheet {
 
         obstacle[0] = Spritesheet.getSprite(20, 584, 225, 87);
         obstacle[1] = Spritesheet.getSprite(274, 584, 222, 87);
-        obstacle[2] = Spritesheet.getSprite(20, 753, 233, 87);
+        obstacle[1] = Spritesheet.getSprite(20, 753, 225, 87);
     }
 
     private static BufferedImage getSprite(int x, int y, int width, int height) {

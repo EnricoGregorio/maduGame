@@ -72,7 +72,8 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
     }
 
-    // Método para verificar se as entidades Player e Obstáculos colidiu com algum obstáculo.
+    // Método para verificar se as entidades Player e Obstáculos colidiu com algum
+    // obstáculo.
     protected static boolean isCollide(Rectangle rect) {
         for (Obstacle obs : obstacles) {
             if (obs.intersects(rect)) {
@@ -222,7 +223,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
     public static void main(String[] args) {
         Game game = new Game();
-
         game.startGame();
     }
 }
