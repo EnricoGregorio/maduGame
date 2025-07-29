@@ -160,7 +160,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         long lastTime = System.nanoTime();
         long now;
         double timer = System.currentTimeMillis();
-        double fps = 180.0;
+        double fps = 120.0;
         double ns = 1000000000 / fps;
         double delta = 0;
         int frames = 0;

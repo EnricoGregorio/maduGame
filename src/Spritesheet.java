@@ -16,15 +16,15 @@ public class Spritesheet {
             e.printStackTrace();
         }
 
-        player = new BufferedImage[6];
+        player = new BufferedImage[3];
         obstacle = new BufferedImage[3];
 
-        player[0] = Spritesheet.getSprite(16, 32, 156, 222);
-        player[1] = Spritesheet.getSprite(176, 32, 156, 222);
-        player[2] = Spritesheet.getSprite(332, 32, 156, 222);
-        player[3] = Spritesheet.getSprite(16, 260, 156, 222);
-        player[4] = Spritesheet.getSprite(176, 260, 156, 222);
-        player[5] = Spritesheet.getSprite(332, 260, 156, 222);
+        player[0] = Spritesheet.getSprite(18, 36, 151, 216);
+        player[1] = Spritesheet.getSprite(177, 36, 147, 216);
+        player[2] = Spritesheet.getSprite(332, 36, 148, 216);
+        // player[3] = Spritesheet.getSprite(18, 262, 151, 216);
+        // player[4] = Spritesheet.getSprite(177, 262, 147, 216);
+        // player[5] = Spritesheet.getSprite(332, 262, 148, 216);
 
         obstacle[0] = Spritesheet.getSprite(20, 584, 225, 87);
         obstacle[1] = Spritesheet.getSprite(274, 584, 222, 87);

@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Obstacle extends Rectangle {
     private boolean isMove = true;
-    protected int height = 90, width = 170;
+    protected int width = 240, height = 120;
     protected static double speed = 1;
 
     private int curFrames = 0, targetFrames = 15;
@@ -12,7 +12,7 @@ public class Obstacle extends Rectangle {
     Random rand = new Random();
 
     protected Obstacle(int x, int y) {
-        super(x, y, 170, 90);
+        super(x, y, 240, 120);
     }
 
     private void anime() {

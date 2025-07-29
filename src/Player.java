@@ -4,14 +4,14 @@ import java.awt.Rectangle;
 public class Player extends Rectangle {
     protected boolean up, down;
     private int speed = 3;
-    private int height = 80, width = 60;
+    private int width = 120, height = 140;
 
     private boolean isMove = true;
-    private int curFrames = 0, targetFrames = 15;
+    private int curFrames = 0, targetFrames = 13;
     private int curAnimation = 0;
 
     protected Player(int x, int y) {
-        super(x, y,60, 80);
+        super(x, y,120, 140);
     }
 
     private void anime() {
