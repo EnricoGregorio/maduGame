@@ -9,6 +9,7 @@ public class Player extends Rectangle {
     private boolean isMove = true;
     private int curFrames = 0, targetFrames = 13;
     private int curAnimation = 0;
+    private boolean isCollides = !Game.isCollide(Game.player);
 
     protected Player(int x, int y) {
         super(x, y,120, 140);
@@ -32,11 +33,11 @@ public class Player extends Rectangle {
     protected void update() {
         anime();
 
-        if (up && y >= 0 && Game.isFree()) {
+        if (up && y >= 0 && isCollides) {
             y -= speed;
         }
 
-        if (down && y <= Game.HEIGHT - height && Game.isFree()) {
+        if (down && y <= Game.HEIGHT - height && isCollides) {
             y += speed;
         }
     }

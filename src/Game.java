@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
@@ -13,17 +14,27 @@ import java.util.Random;
 import javax.swing.JFrame;
 
 public class Game extends Canvas implements Runnable, KeyListener {
+
+    // Definindo as variáveis para as dimensões da minha janela, para executar o
+    // loop do jogo e para controlar o loop.
     protected static final int WIDTH = 1366, HEIGHT = 768, SCALE = 1;
     private Thread thread;
     private boolean isRunning;
 
+    // Instanciando as variáveis das minhas entidades Player e Obstáculos.
     protected static Player player;
     protected static List<Obstacle> obstacles = new ArrayList<Obstacle>();
 
-    private long lastRectTime = System.currentTimeMillis(); // tempo do último retângulo
+    // Instanciando as listras para serem desenhadas na janela para simularem a
+    // faixa de rua.
+    private long lastStripeTime = System.currentTimeMillis(); // tempo da última listra.
     protected static List<Stripe> stripes = new ArrayList<Stripe>();
+
+    // Instanciando o objeto rand para aleatorizar o surgimento dos obstáculos.
     private Random rand = new Random();
 
+    // Método construtor sobre essa classe que invoca os principais métodos do
+    // programa e inicializa o meu Players.
     private Game() {
         this.addKeyListener(this);
         this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
@@ -32,6 +43,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         player = new Player(300, HEIGHT - HEIGHT / 2);
     }
 
+    // Método para criar a minha janela.
     private void initFrame() {
         JFrame frame = new JFrame();
         frame.setTitle("Madu Driver");
@@ -43,12 +55,14 @@ public class Game extends Canvas implements Runnable, KeyListener {
         frame.setVisible(true);
     }
 
+    // Método para iniciar o jogo.
     private void startGame() {
         thread = new Thread(this);
         isRunning = true;
         thread.start();
     }
 
+    // Método para parar o jogo.
     private void stopGame() {
         isRunning = false;
         try {
@@ -58,34 +72,26 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
     }
 
-    protected static boolean isFree() {
-        for (int i = 0; i < obstacles.size(); i++) {
-            Obstacle actualObs = obstacles.get(i);
-            if (actualObs.intersects(player)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Verifica se o novo obstáculo colide com algum já existente
-    private boolean collidesWithOthers(Obstacle newObstacle) {
+    // Método para verificar se as entidades Player e Obstáculos colidiu com algum obstáculo.
+    protected static boolean isCollide(Rectangle rect) {
         for (Obstacle obs : obstacles) {
-            if (obs.intersects(newObstacle)) {
+            if (obs.intersects(rect)) {
                 return true;
             }
         }
         return false;
     }
 
+    // Método que chama as atualizações de cada item do meu jogo (Player, obstáculos
+    // e listras).
     private void update() {
         player.update();
 
         if (rand.nextInt(1, 300) == 1) {
             int maxTries = 10;
             for (int i = 0; i < maxTries; i++) {
-                Obstacle newObstacle = new Obstacle(WIDTH, rand.nextInt(0, HEIGHT - 32));
-                if (!collidesWithOthers(newObstacle)) {
+                Obstacle newObstacle = new Obstacle(WIDTH, rand.nextInt(0, HEIGHT - 120));
+                if (!isCollide(newObstacle)) {
                     obstacles.add(newObstacle);
                     break; // sucesso
                 }
@@ -93,7 +99,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         for (int i = 0; i < obstacles.size(); i++) {
-            if (obstacles.get(i).x + 130 < 0) {
+            if (obstacles.get(i).x + 240 < 0) {
                 obstacles.remove(i);
                 i--; // evitar pular elementos
             }
@@ -102,12 +108,12 @@ public class Game extends Canvas implements Runnable, KeyListener {
         long currentTime = System.currentTimeMillis();
 
         // Verifica se 1 segundo passou desde o último retângulo
-        if (currentTime - lastRectTime >= 1000) {
+        if (currentTime - lastStripeTime >= 1000) {
             stripes.add(new Stripe(WIDTH, HEIGHT / 2 - 20));
-            lastRectTime = currentTime;
+            lastStripeTime = currentTime;
         }
 
-         for (int i = 0; i < stripes.size(); i++) {
+        for (int i = 0; i < stripes.size(); i++) {
             if (stripes.get(i).x + 90 < 0) {
                 stripes.remove(i);
                 i--; // evitar pular elementos
@@ -141,7 +147,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         // Message
-        if (!isFree()) {
+        if (isCollide(player)) {
             graph.setColor(new Color(40, 40, 40, 1));
             graph.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
 
