@@ -21,7 +21,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
     protected static List<Obstacle> obstacles = new ArrayList<Obstacle>();
 
     private long lastRectTime = System.currentTimeMillis(); // tempo do último retângulo
-    protected static List<World> stripes = new ArrayList<World>();
+    protected static List<Stripe> stripes = new ArrayList<Stripe>();
     private Random rand = new Random();
 
     private Game() {
@@ -103,7 +103,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
         // Verifica se 1 segundo passou desde o último retângulo
         if (currentTime - lastRectTime >= 1000) {
-            stripes.add(new World(WIDTH, HEIGHT / 2 - 20));
+            stripes.add(new Stripe(WIDTH, HEIGHT / 2 - 20));
             lastRectTime = currentTime;
         }
 
@@ -160,7 +160,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         long lastTime = System.nanoTime();
         long now;
         double timer = System.currentTimeMillis();
-        double fps = 120.0;
+        double fps = 180.0;
         double ns = 1000000000 / fps;
         double delta = 0;
         int frames = 0;

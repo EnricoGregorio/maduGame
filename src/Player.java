@@ -1,5 +1,3 @@
-
-// import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
@@ -44,8 +42,6 @@ public class Player extends Rectangle {
     }
 
     protected void render(Graphics g) {
-        // g.setColor(Color.BLUE);
-        // g.fillRect(x, y, 32, 32);
         g.drawImage(Spritesheet.player[curAnimation], x, y, width, height, null);
     }
 }

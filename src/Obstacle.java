@@ -1,11 +1,10 @@
-// import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Random;
 
 public class Obstacle extends Rectangle {
     private boolean isMove = true;
-    protected int height = 80, width = 170;
+    protected int height = 90, width = 170;
     protected static double speed = 1;
 
     private int curFrames = 0, targetFrames = 15;
@@ -13,7 +12,7 @@ public class Obstacle extends Rectangle {
     Random rand = new Random();
 
     protected Obstacle(int x, int y) {
-        super(x, y, 80, 170);
+        super(x, y, 170, 90);
     }
 
     private void anime() {
@@ -32,8 +31,6 @@ public class Obstacle extends Rectangle {
     }
 
     protected void render(Graphics g) {
-        // g.setColor(Color.RED);
-        // g.fillRect(x -= 2, y, 32, 32);
         anime();
         g.drawImage(Spritesheet.obstacle[curAnimation], x-=2 * speed, y, width, height, null);
     }

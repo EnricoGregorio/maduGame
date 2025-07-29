@@ -2,10 +2,10 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-public class World extends Rectangle {
+public class Stripe extends Rectangle {
     private final int width = 90, height = 20;
 
-    protected World(int x, int y) {
+    protected Stripe(int x, int y) {
         super(x, y, 90, 20);
     }
 
