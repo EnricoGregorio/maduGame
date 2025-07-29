@@ -12,7 +12,7 @@ public class Player extends Rectangle {
     private boolean isCollides = !Game.isCollide(Game.player);
 
     protected Player(int x, int y) {
-        super(x, y,120, 140);
+        super(x, y,90, 140);
     }
 
     private void anime() {
