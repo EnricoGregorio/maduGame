@@ -21,6 +21,9 @@ public class Game extends Canvas implements Runnable, KeyListener {
     private Thread thread;
     private boolean isRunning;
 
+    // Variável para armazenar o FPS do jogo que será mostrado na interface.
+    private int fps = 0;
+
     // variáveis de controle de pontos.
     private double score = 0;
     private final double SCORE_SPEED = 0.2;
@@ -76,8 +79,29 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
     }
 
-    // Método para verificar se as entidades Player e Obstáculos colidiu com algum
-    // obstáculo.
+    // Método para reiniciar o jogo.
+    private void restartGame() {
+        // Apagamos cada obstáculo e listra existente.
+        for (int i = 0; i < obstacles.size(); i++) {
+            obstacles.remove(i);
+            i--;
+        }
+        for (int i = 0; i < stripes.size(); i++) {
+            stripes.remove(i);
+            i--;
+        }
+
+        // Criamos um novo jogador utilizando a mesma variável.
+        player = new Player(300, HEIGHT - HEIGHT / 2);
+
+        // Reiniciamos os pontos.
+        score = 0;
+
+        // Após tudo pronto, iniciamos o jogo.
+        this.startGame();
+    }
+
+    // Método para verificar se as entidades Player e Obstáculos colidiu com algum obstáculo.
     protected static boolean isCollide(Rectangle rect) {
         for (Obstacle obs : obstacles) {
             if (obs.intersects(rect)) {
@@ -94,8 +118,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         return number;
     }
 
-    // Método que chama as atualizações de cada item do meu jogo (Player, obstáculos
-    // e listras).
+    // Método que chama as atualizações de cada item do meu jogo (Player, obstáculos e listras).
     private void update() {
         player.update();
         score += SCORE_SPEED;
@@ -112,7 +135,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         for (int i = 0; i < obstacles.size(); i++) {
-            if (obstacles.get(i).x + 240 < 0) {
+            if (obstacles.get(i).x + obstacles.get(i).width < 0) {
                 obstacles.remove(i);
                 i--; // evitar pular elementos
             }
@@ -127,7 +150,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         for (int i = 0; i < stripes.size(); i++) {
-            if (stripes.get(i).x + 90 < 0) {
+            if (stripes.get(i).x + stripes.get(i).width < 0) {
                 stripes.remove(i);
                 i--; // evitar pular elementos
             }
@@ -151,6 +174,11 @@ public class Game extends Canvas implements Runnable, KeyListener {
             stripes.get(i).render(graph);
         }
 
+        // FPS
+        graph.setColor(Color.WHITE);
+        graph.setFont(new Font("Arial", Font.BOLD, 20));
+        graph.drawString("FPS: " + this.fps, WIDTH - 100, 35);
+
         // Player
         player.render(graph);
 
@@ -160,7 +188,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         // Score
-        graph.setColor(Color.WHITE);
         graph.setFont(new Font("Arial", Font.BOLD, 50));
         graph.drawString("Score: " + convertScoreToString(this.score), 10, 55);
 
@@ -169,13 +196,15 @@ public class Game extends Canvas implements Runnable, KeyListener {
             graph.setColor(new Color(40, 40, 40, 180));
             graph.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
 
-            graph.setColor(new Color(255, 255, 255));
+            graph.setColor(Color.WHITE);
             graph.setFont(new Font("Arial", Font.BOLD, 80));
             graph.drawString("Game Over", WIDTH * SCALE / 2 - 210, HEIGHT * SCALE / 2 - 180);
+
+            graph.setFont(new Font("Arial", Font.BOLD, 30));
+            graph.drawString("Aperte \"Esc\" para fechar o jogo ou \"R\" para reiniciar.", WIDTH * SCALE / 2 - 380, HEIGHT * SCALE / 2 - 130);
             bs.show();
             isRunning = false;
         }
-
         bs.show();
     }
 
@@ -184,8 +213,8 @@ public class Game extends Canvas implements Runnable, KeyListener {
         long lastTime = System.nanoTime();
         long now;
         double timer = System.currentTimeMillis();
-        double fps = 120.0;
-        double ns = 1000000000 / fps;
+        double maxFPS = 120.0;
+        double ns = 1000000000 / maxFPS;
         double delta = 0;
         int frames = 0;
 
@@ -202,10 +231,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
             }
 
             if (System.currentTimeMillis() - timer >= 1000) {
-                System.out.println("FPS: " + frames);
+                this.fps = frames;
+                Obstacle.speed += 0.02;
                 frames = 0;
                 timer += 1000;
-                Obstacle.speed += 0.02;
             }
         }
         stopGame();
@@ -228,7 +257,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         if (e.getKeyCode() == KeyEvent.VK_R && isRunning == false) {
-            this.startGame();
+            restartGame();
         }
     }
 
