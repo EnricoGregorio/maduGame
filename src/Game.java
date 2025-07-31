@@ -89,7 +89,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
     // Método para converter os pontos para texto.
     private String convertScoreToString(double score) {
-        double points = (int) Math.floor(score);
+        int points = (int) Math.floor(score);
         String number = String.valueOf(points);
         return number;
     }
@@ -225,6 +225,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             System.exit(0);
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_R && isRunning == false) {
+            this.startGame();
         }
     }
 
