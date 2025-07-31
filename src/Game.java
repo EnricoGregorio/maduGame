@@ -21,6 +21,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
     private Thread thread;
     private boolean isRunning;
 
+    // variáveis de controle de pontos.
+    private double score = 0;
+    private final double SCORE_SPEED = 0.2;
+
     // Instanciando as variáveis das minhas entidades Player e Obstáculos.
     protected static Player player;
     protected static List<Obstacle> obstacles = new ArrayList<Obstacle>();
@@ -83,10 +87,18 @@ public class Game extends Canvas implements Runnable, KeyListener {
         return false;
     }
 
+    // Método para converter os pontos para texto.
+    private String convertScoreToString(double score) {
+        double points = (int) Math.floor(score);
+        String number = String.valueOf(points);
+        return number;
+    }
+
     // Método que chama as atualizações de cada item do meu jogo (Player, obstáculos
     // e listras).
     private void update() {
         player.update();
+        score += SCORE_SPEED;
 
         if (rand.nextInt(1, 300) == 1) {
             int maxTries = 10;
@@ -147,9 +159,14 @@ public class Game extends Canvas implements Runnable, KeyListener {
             obstacles.get(i).render(graph);
         }
 
+        // Score
+        graph.setColor(Color.WHITE);
+        graph.setFont(new Font("Arial", Font.BOLD, 50));
+        graph.drawString("Score: " + convertScoreToString(this.score), 10, 55);
+
         // Message
         if (isCollide(player)) {
-            graph.setColor(new Color(40, 40, 40, 1));
+            graph.setColor(new Color(40, 40, 40, 180));
             graph.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
 
             graph.setColor(new Color(255, 255, 255));
