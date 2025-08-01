@@ -249,7 +249,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
             if (System.currentTimeMillis() - timer >= 1000) {
                 this.fps = frames;
-                Obstacle.speed += 1;
+                Obstacle.speed += 0.2;
                 frames = 0;
                 timer += 1000;
             }
