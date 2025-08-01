@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Obstacle extends Rectangle {
     private boolean isMove = true;
-    protected int width = 240, height = 120;
+    protected final int width = 240, height = 120;
     protected static double speed = 1;
 
     private int curFrames = 0, targetFrames = 15;

@@ -82,26 +82,55 @@ public class Game extends Canvas implements Runnable, KeyListener {
     // Método para reiniciar o jogo.
     private void restartGame() {
         // Apagamos cada obstáculo e listra existente.
-        for (int i = 0; i < obstacles.size(); i++) {
-            obstacles.remove(i);
-            i--;
-        }
-        for (int i = 0; i < stripes.size(); i++) {
-            stripes.remove(i);
-            i--;
-        }
+        removeObject(0);
 
         // Criamos um novo jogador utilizando a mesma variável.
         player = new Player(300, HEIGHT - HEIGHT / 2);
 
         // Reiniciamos os pontos.
         score = 0;
+        Obstacle.speed = 1;
 
         // Após tudo pronto, iniciamos o jogo.
         this.startGame();
     }
 
-    // Método para verificar se as entidades Player e Obstáculos colidiu com algum obstáculo.
+    // Método para remover um objeto (listra ou obstáculo) do meu jogo, bsedo em ID. 1 para Carros e 2 para listras.
+    private void removeObject(int idObject) {
+        switch (idObject) {
+            case 0:
+                for (int i = 0; i < stripes.size(); i++) {
+                    stripes.remove(i);
+                    i--;
+                }
+                for (int i = 0; i < obstacles.size(); i++) {
+                    obstacles.remove(i);
+                    i--;
+                }
+                break;
+            case 1:
+                for (int i = 0; i < obstacles.size(); i++) {
+                    if (obstacles.get(i).x + obstacles.get(i).width < 0) {
+                        obstacles.remove(i);
+                        i--; // evitar pular elementos
+                    }
+                }
+                break;
+            case 2:
+                for (int i = 0; i < stripes.size(); i++) {
+                    if (stripes.get(i).x + stripes.get(i).width < 0) {
+                        stripes.remove(i);
+                        i--; // evitar pular elementos
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    // Método para verificar se as entidades Player e Obstáculos colidiu com algum
+    // obstáculo.
     protected static boolean isCollide(Rectangle rect) {
         for (Obstacle obs : obstacles) {
             if (obs.intersects(rect)) {
@@ -134,27 +163,15 @@ public class Game extends Canvas implements Runnable, KeyListener {
             }
         }
 
-        for (int i = 0; i < obstacles.size(); i++) {
-            if (obstacles.get(i).x + obstacles.get(i).width < 0) {
-                obstacles.remove(i);
-                i--; // evitar pular elementos
-            }
-        }
-
         long currentTime = System.currentTimeMillis();
-
         // Verifica se 1 segundo passou desde o último retângulo
         if (currentTime - lastStripeTime >= 1000) {
             stripes.add(new Stripe(WIDTH, HEIGHT / 2 - 20));
             lastStripeTime = currentTime;
         }
 
-        for (int i = 0; i < stripes.size(); i++) {
-            if (stripes.get(i).x + stripes.get(i).width < 0) {
-                stripes.remove(i);
-                i--; // evitar pular elementos
-            }
-        }
+        removeObject(1);
+        removeObject(2);
     }
 
     private void render() {
@@ -232,7 +249,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
             if (System.currentTimeMillis() - timer >= 1000) {
                 this.fps = frames;
-                Obstacle.speed += 0.02;
+                Obstacle.speed += 1;
                 frames = 0;
                 timer += 1000;
             }
