@@ -191,11 +191,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
             stripes.get(i).render(graph);
         }
 
-        // FPS
-        graph.setColor(Color.WHITE);
-        graph.setFont(new Font("Arial", Font.BOLD, 20));
-        graph.drawString("FPS: " + this.fps, WIDTH - 100, 35);
-
         // Player
         player.render(graph);
 
@@ -207,6 +202,11 @@ public class Game extends Canvas implements Runnable, KeyListener {
         // Score
         graph.setFont(new Font("Arial", Font.BOLD, 50));
         graph.drawString("Score: " + convertScoreToString(this.score), 10, 55);
+
+        // FPS
+        graph.setColor(Color.WHITE);
+        graph.setFont(new Font("Arial", Font.BOLD, 20));
+        graph.drawString("FPS: " + this.fps, WIDTH - 100, 35);
 
         // Message
         if (isCollide(player)) {
