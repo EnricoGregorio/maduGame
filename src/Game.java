@@ -7,6 +7,12 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,8 +21,7 @@ import javax.swing.JFrame;
 
 public class Game extends Canvas implements Runnable, KeyListener {
 
-    // Definindo as variáveis para as dimensões da minha janela, para executar o
-    // loop do jogo e para controlar o loop.
+    // Definindo as variáveis para as dimensões da minha janela, para executar o loop do jogo e para controlar o loop.
     protected static final int WIDTH = 1366, HEIGHT = 768, SCALE = 1;
     private Thread thread;
     private boolean isRunning;
@@ -27,21 +32,20 @@ public class Game extends Canvas implements Runnable, KeyListener {
     // variáveis de controle de pontos.
     private double score = 0;
     private final double SCORE_SPEED = 0.2;
+    private double record = 0;
 
     // Instanciando as variáveis das minhas entidades Player e Obstáculos.
     protected static Player player;
     protected static List<Obstacle> obstacles = new ArrayList<Obstacle>();
 
-    // Instanciando as listras para serem desenhadas na janela para simularem a
-    // faixa de rua.
+    // Instanciando as listras para serem desenhadas na janela para simularem a faixa de rua.
     private long lastStripeTime = System.currentTimeMillis(); // tempo da última listra.
     protected static List<Stripe> stripes = new ArrayList<Stripe>();
 
     // Instanciando o objeto rand para aleatorizar o surgimento dos obstáculos.
     private Random rand = new Random();
 
-    // Método construtor sobre essa classe que invoca os principais métodos do
-    // programa e inicializa o meu Players.
+    // Método construtor sobre essa classe que invoca os principais métodos do programa e inicializa o meu Players.
     private Game() {
         this.addKeyListener(this);
         this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
@@ -66,17 +70,14 @@ public class Game extends Canvas implements Runnable, KeyListener {
     private void startGame() {
         thread = new Thread(this);
         isRunning = true;
+        saveGamePoint();
         thread.start();
     }
 
     // Método para parar o jogo.
     private void stopGame() {
         isRunning = false;
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        saveGamePoint();
     }
 
     // Método para reiniciar o jogo.
@@ -95,7 +96,56 @@ public class Game extends Canvas implements Runnable, KeyListener {
         this.startGame();
     }
 
-    // Método para remover um objeto (listra ou obstáculo) do meu jogo, bsedo em ID. 1 para Carros e 2 para listras.
+    private void saveGamePoint() {
+        double recordUpdated = this.record;
+
+        File dir = new File("saves");
+        if (!dir.exists()) {
+            boolean criado = dir.mkdir();
+            if (criado) {
+                System.out.println("Diretório 'saves' criado com sucesso.");
+            } else {
+                System.out.println("Falha ao criar o diretório 'saves'.");
+                return;
+            }
+        }
+
+        File save = new File(dir, "score.txt");
+        if (save.exists()) {
+            String path = "saves/score.txt"; // ou apenas "arquivo.txt" se estiver no diretório atual
+            try {
+                // Lê todo o conteúdo do arquivo como uma única String
+                String docPoints = new String(Files.readAllBytes(Paths.get(path)));
+                recordUpdated = Double.parseDouble(docPoints);
+                this.record = recordUpdated;
+            } catch (IOException e) {
+                System.out.println("Erro ao ler o arquivo: " + e.getMessage());
+                return;
+            }
+
+            if (this.score > recordUpdated) {
+                String points = String.valueOf(this.score);
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(save))) {
+                    writer.write(points);
+                    System.out.println("Arquivo criado e pontos salvos com sucesso.");
+                } catch (Exception e) {
+                    System.out.println("Erro ao escrever no arquivo: " + e.getMessage());
+                }
+                this.record = this.score;
+            }
+        } else {
+            this.record = this.score;
+            String points = String.valueOf(record);
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(save))) {
+                writer.write(points);
+                System.out.println("Arquivo criado e pontos salvos com sucesso.");
+            } catch (Exception e) {
+                System.out.println("Erro ao escrever no arquivo: " + e.getMessage());
+            }
+        }
+    }
+
+    // Método para remover um objeto (listra ou obstáculo) do meu jogo, baseado em ID. 1 para Carros e 2 para listras.
     private void removeObject(int idObject) {
         switch (idObject) {
             case 0:
@@ -129,8 +179,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
     }
 
-    // Método para verificar se as entidades Player e Obstáculos colidiu com algum
-    // obstáculo.
+    // Método para verificar se as entidades Player e Obstáculos colidiu com algum obstáculo.
     protected static boolean isCollide(Rectangle rect) {
         for (Obstacle obs : obstacles) {
             if (obs.intersects(rect)) {
@@ -202,6 +251,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         // Score
         graph.setFont(new Font("Arial", Font.BOLD, 50));
         graph.drawString("Score: " + convertScoreToString(this.score), 10, 55);
+        graph.drawString("Record: " + convertScoreToString(this.record), 400, 55);
 
         // FPS
         graph.setColor(Color.WHITE);
@@ -220,7 +270,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
             graph.setFont(new Font("Arial", Font.BOLD, 30));
             graph.drawString("Aperte \"Esc\" para fechar o jogo ou \"R\" para reiniciar.", WIDTH * SCALE / 2 - 380, HEIGHT * SCALE / 2 - 130);
             bs.show();
-            isRunning = false;
+            stopGame();
         }
         bs.show();
     }
